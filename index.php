@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // ใช้ฟังก์ชัน esc() ที่เราสร้างไว้ใน config/db.php
         $safe_email = esc($email);
-        $r = $conn->query("SELECT * FROM admin WHERE ad_email = '$safe_email' LIMIT 1");
+        $r = $conn->query("SELECT * FROM admin WHERE TRIM(ad_email) LIKE '$safe_email' LIMIT 1");
 
         // -------------------------------------------------------------
         // เริ่มส่วน DEBUG (แอบดู Raw Data ตอนวิ่งเข้า Backend)
