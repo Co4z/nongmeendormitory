@@ -6,8 +6,7 @@ if (!empty($_SESSION['ad_id'])) {
     header('Location: ' . SITE_URL . '/pages/dashboard.php');
     exit;
 }
-echo password_hash('admin1234', PASSWORD_DEFAULT);
-exit;
+
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
