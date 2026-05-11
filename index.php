@@ -17,6 +17,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $r = $conn->query("SELECT * FROM admin WHERE ad_email='$email' LIMIT 1");
     if ($r && $r->num_rows > 0) {
         $admin = $r->fetch_assoc();
+
+        // ---------------------------------------------------------
+        // เริ่มส่วน DEBUG: โค้ดส่วนนี้จะหยุดหน้าเว็บเพื่อโชว์ข้อมูลให้เราดู
+        // ---------------------------------------------------------
+        echo "<div style='background:#fff; color:#000; padding:20px; margin:20px; border:2px solid red; font-size: 16px;'>";
+        echo "<h3>ตรวจสอบข้อมูล (Debug)</h3>";
+        echo "<strong>1. อีเมลใน DB:</strong> " . htmlspecialchars($admin['ad_email']) . "<br><br>";
+        echo "<strong>2. Hash ใน DB ที่ดึงมาได้:</strong> " . htmlspecialchars($admin['ad_password']) . "<br><br>";
+        echo "<strong>3. ความยาว Hash:</strong> " . strlen($admin['ad_password']) . " ตัวอักษร (ถ้าไม่ใช่ 60 แปลว่าคอลัมน์สั้นไป)<br><br>";
+        echo "<strong>4. รหัสที่พิมพ์มา:</strong> " . htmlspecialchars($pass) . "<br><br>";
+        echo "<strong>5. ผลการเทียบรหัสผ่าน (password_verify):</strong> ";
+        var_dump(password_verify($pass, $admin['ad_password']));
+        echo "</div>";
+        exit; 
+        // ---------------------------------------------------------
+
         // ตรวจสอบรหัสผ่านที่เข้ารหัส (Bcrypt)
         if (password_verify($pass, $admin['ad_password'])) {
             $_SESSION['ad_id']   = $admin['ad_id'];
