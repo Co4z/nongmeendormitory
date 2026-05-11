@@ -38,4 +38,15 @@ if (!function_exists('getSetting')) {
         return '';
     }
 }
+
+// ฟังก์ชันตรวจสอบการล็อกอิน (เพิ่มใหม่)
+if (!function_exists('requireLogin')) {
+    function requireLogin() {
+        if (empty($_SESSION['ad_id'])) {
+            // ถ้ายังไม่ได้ล็อกอิน ให้เด้งกลับไปหน้าเข้าสู่ระบบ
+            header('Location: ' . SITE_URL . '/index.php');
+            exit;
+        }
+    }
+}
 ?>
