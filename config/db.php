@@ -6,7 +6,7 @@
 define('DB_HOST', 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com');
 define('DB_USER', '2KwDfypAKj7WupU.root'); 
 define('DB_PASS', 'jpLbbarlEO72Wqwe'); 
-define('DB_NAME', 'dormitory_db'); 
+define('DB_NAME', 'nongmeendormitory'); 
 define('DB_PORT', 4000); 
 
 define('SITE_URL', 'https://nongmeendormitory.onrender.com'); 
