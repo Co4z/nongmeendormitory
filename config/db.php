@@ -5,7 +5,7 @@
 
 // แก้ไขข้อมูลตามที่ปรากฏในหน้า TiDB Cloud ของคุณ
 define('DB_HOST', 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com'); // ตรวจสอบ Endpoint อีกครั้งจากหน้าเว็บ TiDB
-define('DB_USER', 'root'); // หรือ Username ที่คุณตั้งไว้
+define('DB_USER', '2KwDfypAKj7WupU.root');
 define('DB_PASS', 'jpLbbarlEO72Wqwe'); 
 define('DB_NAME', 'dormitory_db');
 define('DB_PORT', 4000); // TiDB ต้องใช้พอร์ต 4000
