@@ -19,43 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($pass)) {
         $error = 'กรุณากรอกอีเมลและรหัสผ่าน';
     } else {
-        // ใช้ฟังก์ชัน esc() ที่เราสร้างไว้ใน config/db.php
         $safe_email = esc($email);
-        $r = $conn->query("SELECT * FROM admin WHERE TRIM(ad_email) LIKE '$safe_email' LIMIT 1");
+        $r = $conn->query("SELECT * FROM admin WHERE ad_email = '$safe_email' LIMIT 1");
 
-        // -------------------------------------------------------------
-        // เริ่มส่วน DEBUG (แอบดู Raw Data ตอนวิ่งเข้า Backend)
-        // -------------------------------------------------------------
-        echo "<div style='background:#fff; color:#000; padding:20px; z-index:9999; position:fixed; top:0; left:0; width:100%; border-bottom:4px solid red; font-family:sans-serif;'>";
-        echo "<h3 style='color:red;'>🚨 Debug Mode 🚨</h3>";
-        echo "<b>1. สิ่งที่กรอกมาจากหน้าเว็บ (Input):</b><br>";
-        echo "- Email: [" . htmlspecialchars($email) . "] (ความยาว: " . strlen($email) . " ตัวอักษร)<br>";
-        echo "- Password: [" . htmlspecialchars($pass) . "] (ความยาว: " . strlen($pass) . " ตัวอักษร)<br><br>";
-        
-        if (!$r) {
-            echo "<b>2. SQL Query Error:</b> " . htmlspecialchars($conn->error) . "<br>";
-        } else {
-            echo "<b>2. ผลการค้นหาจาก DB:</b> เจอข้อมูล " . $r->num_rows . " แถว<br><br>";
-            if ($r->num_rows > 0) {
-                // เอาข้อมูลมาเก็บในตัวแปร $admin ชั่วคราวเพื่อปริ้นท์
-                $admin = $r->fetch_assoc();
-                echo "<b>3. ข้อมูลดิบใน DB (Raw Data):</b><br>";
-                echo "- Email ใน DB: [" . htmlspecialchars($admin['ad_email']) . "] (ความยาว: " . strlen($admin['ad_email']) . " ตัวอักษร)<br>";
-                echo "- Password ใน DB: [" . htmlspecialchars($admin['ad_password']) . "] (ความยาว: " . strlen($admin['ad_password']) . " ตัวอักษร)<br><br>";
-                
-                $pass_match = ($pass === $admin['ad_password']) ? "✅ ตรงกัน" : "❌ ไม่ตรงกัน";
-                echo "<b>4. ผลการตรวจสอบตรรกะ:</b><br>";
-                echo "- เทียบรหัสแบบข้อความธรรมดา: " . $pass_match . "<br>";
-                echo "- เทียบรหัสแบบ Bcrypt: " . (password_verify($pass, $admin['ad_password']) ? "✅ ตรงกัน" : "❌ ไม่ตรงกัน") . "<br>";
-            }
-        }
-        echo "</div>";
-        exit;
-        // -------------------------------------------------------------
-        // จบส่วน DEBUG
-        // -------------------------------------------------------------
-
-        // โค้ดส่วนนี้จะทำงานหลังจากที่เราเอา exit; ด้านบนออก
         if ($r && $r->num_rows > 0) {
             $admin = $r->fetch_assoc();
             $stored_pass = $admin['ad_password'];
@@ -107,4 +73,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .logo-wrap { text-align: center; margin-bottom: 32px; }
   .logo-title { font-family: 'Prompt', sans-serif; font-size: 22px; font-weight: 600; color: var(--primary-dark); }
   .alert { padding: 12px; border-radius: 10px; font-size: 14px; margin-bottom: 20px; background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(192,57,43,0.2); }
-  .
+  .form-group { margin-bottom: 18px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+  input { width: 100%; height: 46px; padding: 0 15px; border: 1.5px solid var(--border); border-radius: 10px; outline: none; }
+  input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,79,138,0.1); }
+  .btn-submit { width: 100%; height: 48px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo-wrap">
+    <div class="logo-title">ระบบจัดการหอพัก</div>
+    <div class="logo-sub">สำหรับผู้ดูแลระบบเท่านั้น</div>
+  </div>
+
+  <?php if ($error): ?>
+  <div class="alert"><?= htmlspecialchars($error) ?></div>
+  <?php endif; ?>
+
+  <form method="POST" autocomplete="off">
+    <div class="form-group">
+      <label>อีเมล</label>
+      <input type="email" name="email" placeholder="admin@dormitory.com" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
+    </div>
+    <div class="form-group">
+      <label>รหัสผ่าน</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn-submit">เข้าสู่ระบบ</button>
+  </form>
+  <div style="text-align:center; margin-top:20px; font-size:12px; color:#aaa;">หอพักน้องมีน · 2026</div>
+</div>
+</body>
+</html>
