@@ -7,7 +7,7 @@
 define('DB_HOST', 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com'); // ตรวจสอบ Endpoint อีกครั้งจากหน้าเว็บ TiDB
 define('DB_USER', 'root'); // หรือ Username ที่คุณตั้งไว้
 define('DB_PASS', 'jpLbbarlEO72Wqwe'); 
-define('DB_NAME', 'nongmeendormitory');
+define('DB_NAME', 'dormitory_db');
 define('DB_PORT', 4000); // TiDB ต้องใช้พอร์ต 4000
 
 define('SITE_URL', 'https://nongmeendormitory.onrender.com'); // เมื่อขึ้น Render แล้วให้เปลี่ยนเป็น URL ของ Render ครับ
