@@ -1,25 +1,6 @@
 <?php
-session_start();
-
-// ตั้งค่าฐานข้อมูล TiDB Cloud
-define('DB_HOST', 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com');
-define('DB_USER', '3Bfno6oj2JjfgJr.root');
-define('DB_PASS', 'vEZsw0lKkIenD1cK');
-define('DB_NAME', 'dormitory_db');
-define('DB_PORT', 4000);
-define('SITE_URL', 'https://nongmeendormitory.onrender.com');
-
-// เชื่อมต่อ DB
-$conn = mysqli_init();
-$conn->ssl_set(NULL, NULL, NULL, NULL, NULL);
-
-$db_error = '';
-if (!$conn->real_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT, NULL, MYSQLI_CLIENT_SSL)) {
-    $db_error = 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้';
-}
-if (!$db_error) {
-    $conn->set_charset("utf8mb4");
-}
+// เรียกใช้ไฟล์ config (ซึ่งในนั้นมี session_start และเชื่อมต่อ DB ไว้แล้ว)
+require_once 'config/db.php';
 
 // ถ้า Login อยู่แล้วให้ redirect
 if (!empty($_SESSION['ad_id'])) {
@@ -30,28 +11,29 @@ if (!empty($_SESSION['ad_id'])) {
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$db_error) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $pass  = $_POST['password'] ?? '';
 
     if (empty($email) || empty($pass)) {
         $error = 'กรุณากรอกอีเมลและรหัสผ่าน';
     } else {
-        $safe_email = mysqli_real_escape_string($conn, $email);
+        // ใช้ฟังก์ชัน esc() ที่เราสร้างไว้ใน config/db.php ได้เลย
+        $safe_email = esc($email);
         $r = $conn->query("SELECT * FROM admin WHERE ad_email = '$safe_email' LIMIT 1");
 
         if ($r && $r->num_rows > 0) {
             $admin = $r->fetch_assoc();
             $stored_pass = $admin['ad_password'];
 
-            // รองรับทั้ง bcrypt และ plain text (เผื่อ legacy)
+            // รองรับทั้ง bcrypt และ plain text
             $verified = false;
             if (password_verify($pass, $stored_pass)) {
                 $verified = true;
             } elseif ($pass === $stored_pass) {
                 // plain text fallback — อัปเดตเป็น hash ทันที
                 $new_hash = password_hash($pass, PASSWORD_BCRYPT);
-                $safe_hash = mysqli_real_escape_string($conn, $new_hash);
+                $safe_hash = esc($new_hash);
                 $conn->query("UPDATE admin SET ad_password = '$safe_hash' WHERE ad_email = '$safe_email'");
                 $verified = true;
             }
@@ -61,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$db_error) {
                 $_SESSION['ad_id']    = $admin['ad_id'];
                 $_SESSION['ad_name']  = $admin['ad_name'] . ' ' . $admin['ad_lastname'];
                 $_SESSION['ad_email'] = $admin['ad_email'];
+                
                 header('Location: ' . SITE_URL . '/pages/dashboard.php');
                 exit;
             }
@@ -69,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$db_error) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
