@@ -1,6 +1,7 @@
 <?php
 require_once 'config/db.php';
 
+// ถ้า Login อยู่แล้ว ให้ข้ามไปหน้า Dashboard ทันที
 if (!empty($_SESSION['ad_id'])) {
     header('Location: ' . SITE_URL . '/pages/dashboard.php');
     exit;
@@ -12,12 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = esc($_POST['email'] ?? '');
     $pass  = $_POST['password'] ?? '';
 
+    // ตรวจสอบ Email ในฐานข้อมูล
     $r = $conn->query("SELECT * FROM admin WHERE ad_email='$email' LIMIT 1");
     if ($r && $r->num_rows > 0) {
         $admin = $r->fetch_assoc();
+        // ตรวจสอบรหัสผ่านที่เข้ารหัส (Bcrypt)
         if (password_verify($pass, $admin['ad_password'])) {
             $_SESSION['ad_id']   = $admin['ad_id'];
             $_SESSION['ad_name'] = $admin['ad_name'] . ' ' . $admin['ad_lastname'];
+            
             header('Location: ' . SITE_URL . '/pages/dashboard.php');
             exit;
         }
@@ -28,12 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เข้าสู่ระบบ - ระบบจัดการหอพัก</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<link href="<?= SITE_URL ?>/assets/css/style.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - <?= SITE_NAME ?></title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="<?= SITE_URL ?>/assets/css/style.css" rel="stylesheet">
 </head>
 <body class="login-page">
 <div class="login-box">
