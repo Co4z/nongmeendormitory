@@ -6,7 +6,7 @@
 define('DB_HOST', 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com');
 // ⚠️ ตรวจสอบรหัส Prefix หน้า .root ให้ตรงกับที่เห็นในหน้า Connect ของ TiDB อีกครั้งครับ
 define('DB_USER', '3Bfno6oj2JjfgJr.root'); 
-define('DB_PASS', 'jpLbbarlEO72Wqwe'); 
+define('DB_PASS', 'vEZsw0lKkIenD1cK'); 
 define('DB_NAME', 'dormitory_db'); // <--- ใช้ชื่อนี้ เพราะตารางทั้งหมดอยู่ที่นี่ครับ
 define('DB_PORT', 4000); 
 
