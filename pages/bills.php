@@ -74,13 +74,14 @@ $where = "WHERE 1=1";
 if ($filter_status) $where .= " AND b.status='$filter_status'";
 if ($filter_month)  $where .= " AND DATE_FORMAT(b.billing_month,'%Y-%m')='$filter_month'";
 
-// ── 5. ดึงข้อมูล ──
+// ── 5. ดึงข้อมูล (แก้ไขเพื่อให้รองรับ TiDB โดยเปลี่ยน Subquery เป็นการ Join ปกติ) ──
 $bills = $conn->query("
     SELECT b.*, bl.total_amount, c.name, c.lastname, rn.id_room 
     FROM bill b
     LEFT JOIN bill_list bl ON b.id_listbill = bl.id_listbill
     LEFT JOIN customer c ON b.id_people = c.id_people
-    JOIN room_number rn ON b.contract_id IN (SELECT contract_id FROM contract WHERE id_room = rn.id_room)
+    JOIN contract ct ON b.contract_id = ct.contract_id
+    JOIN room_number rn ON ct.id_room = rn.id_room
     LEFT JOIN payment p ON p.id_listbill = b.id_listbill
     $where
     ORDER BY b.id_listbill DESC
@@ -142,15 +143,14 @@ include '../includes/header.php';
             </thead>
             <tbody>
                 <?php while ($b = $bills->fetch_assoc()): 
-                    // กำหนดสีของ Badge ตามสถานะ
-                    $badge_style = "badge-warning"; // pending (สีส้ม)
+                    $badge_style = "badge-warning"; 
                     $status_text = "รอชำระ";
                     
                     if ($b['status'] == 'paid') {
-                        $badge_style = "badge-success"; // paid (สีเขียว)
+                        $badge_style = "badge-success"; 
                         $status_text = "ชำระแล้ว";
                     } elseif ($b['status'] == 'waiting') {
-                        $badge_style = "badge-info"; // waiting (สีฟ้า)
+                        $badge_style = "badge-info"; 
                         $status_text = "รอตรวจสอบ";
                     }
                 ?>
