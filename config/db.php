@@ -13,16 +13,24 @@ define('DB_PORT', 4000); // TiDB ต้องใช้พอร์ต 4000
 define('SITE_URL', 'https://nongmeendormitory.onrender.com'); // เมื่อขึ้น Render แล้วให้เปลี่ยนเป็น URL ของ Render ครับ
 define('SITE_NAME', 'ระบบจัดการหอพัก');
 
-// เชื่อมต่อ MySQL (เพิ่ม DB_PORT เข้าไปด้วย)
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
-$conn->set_charset('utf8mb4');
+// สร้างตัวแปรเชื่อมต่อ
+$conn = mysqli_init();
 
-if ($conn->connect_error) {
+// ตั้งค่าให้ใช้ SSL (TiDB Cloud บังคับ)
+// ใน Docker/Render ปกติจะมีไฟล์ cert พื้นฐานอยู่แล้ว ไม่ต้องระบุ path ก็ได้ครับ
+$conn->ssl_set(NULL, NULL, NULL, NULL, NULL);
+
+// เชื่อมต่อโดยระบุ MYSQLI_CLIENT_SSL
+$options = $conn->real_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT, NULL, MYSQLI_CLIENT_SSL);
+
+if (!$options) {
     die('<div style="padding:20px;background:#fee;border:1px solid #f00;font-family:sans-serif;">
-        ❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ' . $conn->connect_error . '
-        <br><small>กรุณาตรวจสอบ config/db.php และสถานะ Cluster บน TiDB Cloud</small>
+        ❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ' . mysqli_connect_error() . '
+        <br><small>กรุณาตรวจสอบการตั้งค่า SSL ใน config/db.php</small>
     </div>');
 }
+
+$conn->set_charset('utf8mb4');
 
 // Helper: escape string
 function esc($str) {
